@@ -85,3 +85,41 @@ void loop() {
     delay(1000);
   }
 }
+
+////////////////////////////////////////////////////
+
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+int stringlength = 0;
+char stringprint[200]
+  ="Yesterday is history, tomorrow is a mystery, buy today is a gift. That is why it is called the present.";
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+
+  int count=0;
+
+  while(1){
+    if(stringprint[count]==0){
+      stringlength=count;
+      break;
+    }
+    count++;
+  }
+}
+
+void loop() {
+  char forprint[2];
+  for(int i=0;i<stringlength;i++){
+    lcd.setCursor(0,0);
+    for(int j=0;j<32;j++){
+      sprintf(forprint,"%c\0",stringprint[(i+j)%(stringlength)]);
+      if(j==16)lcd.setCursor(0,1);
+      lcd.print(forprint);
+    }
+    delay(400);
+  }
+}
