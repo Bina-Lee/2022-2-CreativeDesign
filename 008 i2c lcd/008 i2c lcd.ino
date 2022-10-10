@@ -123,3 +123,143 @@ void loop() {
     delay(400);
   }
 }
+
+////////////////////////////////////////////////////
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// Set the LCD address to 0x27 in PCF8574 by NXP and Set to 0x3F in PCF8574A by Ti
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+byte c0[] = {
+  B00100,
+  B01010,
+  B10001,
+  B01010,
+  B00100,
+  B01010,
+  B10001,
+  B01010
+};
+byte c1[] = {0x0A, 0x11, 0x0A, 0x04, 0x0A, 0x11, 0x0A, 0x04};
+byte c2[] = {0x11, 0x0A, 0x04, 0x0A, 0x11, 0x0A, 0x04, 0x0A};
+byte c3[] = {0x00, 0x00, 0x00, 0x04, 0x04, 0x0F, 0x11, 0x1F};
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  lcd.createChar(0, c0);
+  lcd.createChar(1, c1);
+  lcd.createChar(2, c2);
+  lcd.createChar(3, c3);
+  lcd.home();
+  lcd.write(0);
+  lcd.write(1);
+  lcd.write(2);
+  lcd.write(3);
+}
+
+void loop() { }
+
+////////////////////////////////////////////////////
+
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27,16,2);
+
+String input = "";
+String line1 = "";
+String line2 = "";
+bool stringComplete = false; 
+
+void setup() {
+  Serial.begin(9600);
+  input.reserve(100);
+  line1.reserve(100);
+  line1 = "Serial";
+  line2.reserve(100);
+  line2 = "Enter message!";
+  
+  lcd.init(); 
+  lcd.backlight(); 
+  lcd.print(line1);
+  lcd.setCursor(0,1);
+  lcd.print(line2);
+}
+
+void loop() {
+  if (stringComplete) {
+    Serial.println(input);
+    lcd.clear();
+    line1 = line2;// scroll
+    input.trim(); // remove \r\n at the end
+    line2 = input;
+    lcd.print(line1);
+    lcd.setCursor(0,1);
+    lcd.print(line2);
+    input = "";
+    stringComplete = false;
+  }
+}
+
+void serialEvent() {
+  while (Serial.available()) {
+    char inChar = (char)Serial.read();
+    input += inChar;
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
+}
+
+////////////////////////////////////////////////////
+
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27,16,2);
+
+String input = "";
+String line1 = "";
+String line2 = "";
+bool stringComplete = false; 
+
+void setup() {
+  Serial.begin(9600);
+  input.reserve(100);
+  line1.reserve(100);
+  line1 = "Hello, world!";
+  line2.reserve(100);
+  line2 = "Arduino at INU!";
+  
+  lcd.init(); 
+  lcd.backlight(); 
+  lcd.print(line1);
+  lcd.setCursor(0,1);
+  lcd.print(line2);
+}
+
+void loop() {
+  if (stringComplete) {
+    Serial.println(input);
+    lcd.clear();
+    input.trim(); // remove \r\n at the end
+    if( input.charAt(0) == '0' ) 
+      line1 = input.substring(1);
+    else                        
+      line2 = input.substring(1);
+    lcd.print(line1); lcd.setCursor(0,1); lcd.print(line2);
+    input = ""; stringComplete = false;
+  }
+}
+
+
+void serialEvent() {
+  while (Serial.available()) {
+    char inChar = (char)Serial.read();
+    input += inChar;
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
+}
