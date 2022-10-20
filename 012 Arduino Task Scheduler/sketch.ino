@@ -105,3 +105,61 @@ void toggle_Yellow(){
 
 ////////////////////////////////////////////////////
 
+#include <TaskScheduler.h>
+
+void toggle_Red_ON();
+void toggle_Red_OFF();
+void toggle_Yellow_ON();
+void toggle_Yellow_OFF();
+
+bool s1=true;
+bool s2=true;
+
+Scheduler ts1;
+Scheduler ts2;
+Task t1(1000, -1, toggle_Red_ON , &ts1, true);
+Task t2(1000, -1, toggle_Red_OFF , &ts1, false);
+
+Task t3(850, -1, toggle_Yellow_ON , &ts2, true);
+Task t4(850, -1, toggle_Yellow_OFF, &ts2, false);
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(9,OUTPUT);
+  pinMode(8,OUTPUT);
+  t2.enableDelayed(200);
+  t3.enableDelayed(550);
+  t4.enableDelayed(500);
+
+  
+  digitalWrite(8,s2);
+}
+
+void loop() {
+  ts1.execute();
+  ts2.execute();
+}
+
+void toggle_Red_ON(){
+  s1=1;
+  digitalWrite(9,s1);
+  Serial.print("ON ");
+  Serial.println(millis());
+}
+
+void toggle_Red_OFF(){
+  s1=0;
+  digitalWrite(9,s1);
+  Serial.print("OFF ");
+  Serial.println(millis());
+}
+
+void toggle_Yellow_ON(){
+  s2=1;
+  digitalWrite(8,s2);
+}
+
+void toggle_Yellow_OFF(){
+  s2=0;
+  digitalWrite(8,s2);
+}
